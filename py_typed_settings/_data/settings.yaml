@@ -1,0 +1,27 @@
+%YAML 1.2
+---
+
+constants:
+  - name: cors_origin
+    dev:
+      origins:
+        - 'http://localhost:8080'  # SELF_HOST
+        - '*'
+    remote-dev:
+      origins:
+        - 'https://api-dev.example.com'  # SELF_HOST
+    prod:
+      origins:
+        - 'https://api.example.com'  # SELF_HOST
+
+providers:
+  - provider: aws
+    dev:
+      bucket:
+        value: bucket-dev
+    remote-dev:
+      bucket:
+        value: bucket-dev
+    prod:
+      bucket:
+        value: bucket-prod
