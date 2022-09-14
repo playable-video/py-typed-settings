@@ -7,6 +7,28 @@ Generate typed settings.py from settings.yaml in Python 2, 3.
 
 Useful for fully type-safe settings, with code-completion. E.g., `import settings; print(settings.AWS.bucket.value)`
 
+## Command-line usage
+
+```shell
+$ python -m py_typed_settings --help
+usage: __main__.py [-h] [--version] -i INPUT_YAML -o OUTPUT_PY
+
+Generate typed settings.py from settings.yaml in Python 2, 3
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -i INPUT_YAML, --input-yaml INPUT_YAML
+                        settings.yaml (input) filepath
+  -o OUTPUT_PY, --output-py OUTPUT_PY
+                        settings.py (output) filepath
+```
+
+### Example
+```shell
+python -m py_typed_settings -i py_typed_settings/_data/settings.yaml -o py_typed_settings/settings_gen.py
+```
+
 ## Example YAML input
 
 ```yaml

@@ -9,6 +9,7 @@ import yaml
 
 __author__ = "Samuel Marks"
 __version__ = "0.0.1"
+__description__ = "Generate typed settings.py from settings.yaml in Python 2, 3"
 
 
 def get_logger(name=None):

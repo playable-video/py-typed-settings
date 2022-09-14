@@ -27,6 +27,7 @@ from ast import (
     Tuple,
     alias,
 )
+from codecs import open
 from collections import OrderedDict
 from functools import partial
 from importlib import import_module
@@ -304,12 +305,12 @@ def list_of_dict_to_classes(list_of_dict, name, all_providers, tier):
     )
 
 
-def update_settings(from_yaml, to_py, tier):
+def update_settings(input_yaml, to_py, tier):
     """
     Update the settings module by statically code-generating it (to disk)
 
-    :param from_yaml: Input yaml filename
-    :type from_yaml: ```str```
+    :param input_yaml: Input yaml filename
+    :type input_yaml: ```str```
 
     :param to_py: Output python filename
     :type to_py: ```str```
@@ -317,18 +318,18 @@ def update_settings(from_yaml, to_py, tier):
     :param tier: Tier, defaults to 'dev'
     :type tier: ```str```
     """
-    settings_gen_mod = module_from_yaml_at_tier(from_yaml, tier)
+    settings_gen_mod = module_from_yaml_at_tier(input_yaml, tier)
 
-    with open(to_py, "wt") as f:
+    with open(to_py, "wt", encoding="utf8") as f:
         f.write(to_code(settings_gen_mod))
 
 
-def module_from_yaml_at_tier(from_yaml, tier=environ.get("TIER", "dev")):
+def module_from_yaml_at_tier(input_yaml, tier=environ.get("TIER", "dev")):
     """
     Construct a new settings module (in memory AST)
 
-    :param from_yaml: Input yaml filename
-    :type from_yaml: ```str```
+    :param input_yaml: settings.yaml (input) filepath
+    :type input_yaml: ```str```
 
     :param tier: Tier, defaults to env var TIER if set else 'dev'
     :type tier: ```str```
@@ -336,7 +337,7 @@ def module_from_yaml_at_tier(from_yaml, tier=environ.get("TIER", "dev")):
     :return: Module of settings
     :rtype: ```Module```
     """
-    with open(from_yaml, "rt") as f:
+    with open(input_yaml, "rt", encoding="utf8") as f:
         settings = yaml.safe_load(f)
     all_providers = []
     settings_gen_mod = Module(
@@ -465,27 +466,12 @@ def emit_sorted_yaml(f, settings):
         OrderedDumper.add_representer(OrderedDict, _dict_representer)
         return yaml.dump(data, stream, OrderedDumper, **kwds)
 
-    with open("settings_tut.yaml", "wt") as f:
+    with open("settings_tut.yaml", "wt", encoding="utf8") as f:
         ordered_dump(settings, stream=f, Dumper=yaml.SafeDumper)
     return f
 
 
-if __name__ == "__main__":
-    update_settings(
-        from_yaml=path.join(
-            path.abspath(path.dirname(path.dirname(__file__))),
-            "py_typed_settings",
-            "_data",
-            "settings.yaml",
-        ),
-        to_py=path.join(
-            path.abspath(path.dirname(path.dirname(__file__))),
-            "py_typed_settings",
-            "settings_gen.py",
-        ),
-        tier=environ.get("TIER", "dev"),
-    )
-    # reload(settings_gen)  # Ensure you call this after running `update_settings`
+# reload(settings_gen)  # Ensure you call this after running `update_settings`
 
 
 __all__ = ["module_from_yaml_at_tier"]

@@ -4,23 +4,26 @@ from ast import parse
 from distutils.sysconfig import get_python_lib
 from functools import partial
 from os import listdir, path
-from platform import python_version_tuple
+from sys import version_info
 
 from setuptools import find_packages, setup
 
-if python_version_tuple()[0] == "3":
-    imap = map
-    ifilter = filter
-else:
-    from itertools import ifilter, imap
+if version_info[0] == 2:
+    from itertools import ifilter as filter
+    from itertools import imap as map
 
 if __name__ == "__main__":
     package_name = "py_typed_settings"
 
     with open(path.join(package_name, "__init__.py")) as f:
-        __author__, __version__ = imap(
-            lambda buf: next(imap(lambda e: e.value.s, parse(buf).body)),
-            ifilter(
+        __author__, __version__ = map(
+            lambda buf: next(
+                map(
+                    lambda const: const.value if version_info > (3, 6) else const.s,
+                    parse(buf).body,
+                )
+            ),
+            filter(
                 lambda line: line.startswith("__version__")
                 or line.startswith("__author__"),
                 f,
@@ -42,6 +45,6 @@ if __name__ == "__main__":
         packages=find_packages(),
         package_dir={package_name: package_name},
         data_files=[
-            (_data_install_dir(), list(imap(_data_join, listdir(_data_join()))))
+            (_data_install_dir(), list(map(_data_join, listdir(_data_join()))))
         ],
     )
