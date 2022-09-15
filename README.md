@@ -136,7 +136,7 @@ __all__: List[str] = ['AWS', 'CORS_ORIGIN']
 
 ## End user
 
-    python -m pip install https://api.github.com/repos/SamuelMarks/py-typed-settings/zipball/annotating#egg=py_typed_settings
+    python -m pip install https://api.github.com/repos/SamuelMarks/py-typed-settings/zipball#egg=py_typed_settings
 
 ---
 

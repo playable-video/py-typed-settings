@@ -27,7 +27,6 @@ from ast import (
     Tuple,
     alias,
 )
-from codecs import open
 from collections import OrderedDict
 from functools import partial
 from importlib import import_module
@@ -320,7 +319,7 @@ def update_settings(input_yaml, to_py, tier):
     """
     settings_gen_mod = module_from_yaml_at_tier(input_yaml, tier)
 
-    with open(to_py, "wt", encoding="utf8") as f:
+    with open(to_py, "wt") as f:
         f.write(to_code(settings_gen_mod))
 
 
@@ -337,7 +336,7 @@ def module_from_yaml_at_tier(input_yaml, tier=environ.get("TIER", "dev")):
     :return: Module of settings
     :rtype: ```Module```
     """
-    with open(input_yaml, "rt", encoding="utf8") as f:
+    with open(input_yaml, "rt") as f:
         settings = yaml.safe_load(f)
     all_providers = []
     settings_gen_mod = Module(
@@ -466,7 +465,7 @@ def emit_sorted_yaml(f, settings):
         OrderedDumper.add_representer(OrderedDict, _dict_representer)
         return yaml.dump(data, stream, OrderedDumper, **kwds)
 
-    with open("settings_tut.yaml", "wt", encoding="utf8") as f:
+    with open("settings_tut.yaml", "wt") as f:
         ordered_dump(settings, stream=f, Dumper=yaml.SafeDumper)
     return f
 
