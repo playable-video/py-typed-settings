@@ -10,8 +10,7 @@ Useful for fully type-safe settings, with code-completion. E.g., `import setting
 ## Command-line usage
 
 ```shell
-$ python -m py_typed_settings --help
-usage: __main__.py [-h] [--version] -i INPUT_YAML -o OUTPUT_PY
+usage: py_typed_settings [-h] [--version] -i INPUT_YAML -o OUTPUT_PY
 
 Generate typed settings.py from settings.yaml in Python 2, 3
 
@@ -125,10 +124,33 @@ class CORS_ORIGIN(object):
 __all__: List[str] = ['AWS', 'CORS_ORIGIN']
 ```
 
-## Install dependencies
+## Developer
 
-    pip install -r requirements.txt
+### Install dependencies
 
-## Install package
+    python -m pip install -r requirements.txt
 
-    pip install .
+### Install package
+
+    python -m pip install .
+
+## End user
+
+    python -m pip install https://api.github.com/repos/SamuelMarks/py-typed-settings/zipball/annotating#egg=py_typed_settings
+
+---
+
+## License
+
+Licensed under either of
+
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or <https://www.apache.org/licenses/LICENSE-2.0>)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or <https://opensource.org/licenses/MIT>)
+
+at your option.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.

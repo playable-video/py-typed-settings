@@ -4,6 +4,8 @@ from __future__ import print_function
 
 from argparse import ArgumentParser
 from ast import parse
+from functools import partial
+from operator import attrgetter, itemgetter
 from os import environ, path
 from sys import version_info
 
@@ -12,6 +14,7 @@ from py_typed_settings.settings_schema_gen import update_settings
 if version_info[0] == 2:
     from itertools import ifilter as filter
 
+
 # From https://github.com/Suor/funcy/blob/0ee7ae8/funcy/funcs.py#L34-L36
 def rpartial(func, *args):
     """Partially applies last arguments."""
@@ -19,16 +22,29 @@ def rpartial(func, *args):
 
 
 with open(path.join(path.dirname(__file__), "__init__.py")) as f:
-    __description__ = (lambda const: const.value if version_info > (3, 6) else const.s)(
-        parse(
-            "".join(filter(rpartial(str.startswith, "__description__"), f.readlines()))
-        )
-        .body[0]
-        .value
+    __version__, __description__ = map(
+        lambda const: const.value if version_info > (3, 6) else const.s,
+        map(
+            attrgetter("value"),
+            map(
+                itemgetter(0),
+                map(
+                    attrgetter("body"),
+                    map(
+                        parse,
+                        filter(
+                            lambda line: line.startswith("__version__")
+                            or line.startswith("__description__"),
+                            f,
+                        ),
+                    ),
+                ),
+            ),
+        ),
     )
 
 
-def is_valid_file(parser, arg):
+def is_valid_file(arg, parser):
     return arg if path.isfile(arg) else parser.error("FileNotFound {}".format(arg))
 
 
@@ -39,17 +55,18 @@ def _build_parser():
     :returns: instanceof ArgumentParser
     :rtype: ```ArgumentParser```
     """
-    parser = ArgumentParser(description=__description__)
+    parser = ArgumentParser(
+        prog=path.basename(path.dirname(__file__)), description=__description__
+    )
     parser.add_argument(
-        "--version",
-        action="version",  # version="%(prog)s {}".format(__version__)
+        "--version", action="version", version="%(prog)s {}".format(__version__)
     )
 
     parser.add_argument(
         "-i",
         "--input-yaml",
         help="settings.yaml (input) filepath",
-        type=lambda x: is_valid_file(parser, x),
+        type=partial(is_valid_file, parser=parser),
         required=True,
     )
     parser.add_argument(

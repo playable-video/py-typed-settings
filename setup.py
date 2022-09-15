@@ -3,6 +3,7 @@
 from ast import parse
 from distutils.sysconfig import get_python_lib
 from functools import partial
+from operator import attrgetter, itemgetter
 from os import listdir, path
 from sys import version_info
 
@@ -17,16 +18,23 @@ if __name__ == "__main__":
 
     with open(path.join(package_name, "__init__.py")) as f:
         __author__, __version__ = map(
-            lambda buf: next(
+            lambda const: const.value if version_info > (3, 6) else const.s,
+            map(
+                attrgetter("value"),
                 map(
-                    lambda const: const.value if version_info > (3, 6) else const.s,
-                    parse(buf).body,
-                )
-            ),
-            filter(
-                lambda line: line.startswith("__version__")
-                or line.startswith("__author__"),
-                f,
+                    itemgetter(0),
+                    map(
+                        attrgetter("body"),
+                        map(
+                            parse,
+                            filter(
+                                lambda line: line.startswith("__version__")
+                                or line.startswith("__author__"),
+                                f,
+                            ),
+                        ),
+                    ),
+                ),
             ),
         )
 
