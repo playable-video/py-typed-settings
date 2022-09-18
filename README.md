@@ -10,17 +10,21 @@ Useful for fully type-safe settings, with code-completion. E.g., `import setting
 ## Command-line usage
 
 ```shell
+$ python -m py_typed_settings --help
 usage: py_typed_settings [-h] [--version] -i INPUT_YAML -o OUTPUT_PY
+                         [-n NAMESPACE]
 
 Generate typed settings.py from settings.yaml in Python 2, 3
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   -i INPUT_YAML, --input-yaml INPUT_YAML
                         settings.yaml (input) filepath
   -o OUTPUT_PY, --output-py OUTPUT_PY
                         settings.py (output) filepath
+  -n NAMESPACE, --namespace NAMESPACE
+                        Environment variable to change `tier`
 ```
 
 ### Example

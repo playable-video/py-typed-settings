@@ -76,6 +76,13 @@ def _build_parser():
         type=str,
         required=True,
     )
+    parser.add_argument(
+        "-n",
+        "--namespace",
+        help="Environment variable to change `tier`",
+        type=str,
+        default="TIER",
+    )
 
     return parser
 
@@ -100,7 +107,8 @@ def main(cli_argv=None, return_args=False):
     return update_settings(
         input_yaml=args.input_yaml,
         to_py=args.output_py,
-        tier=environ.get("TIER", "dev"),
+        namespace=args.namespace,
+        tier=environ.get(args.namespace, "dev"),
     )
 
 

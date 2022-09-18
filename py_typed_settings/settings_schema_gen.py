@@ -304,7 +304,7 @@ def list_of_dict_to_classes(list_of_dict, name, all_providers, tier):
     )
 
 
-def update_settings(input_yaml, to_py, tier):
+def update_settings(input_yaml, to_py, tier, namespace):
     """
     Update the settings module by statically code-generating it (to disk)
 
@@ -314,16 +314,21 @@ def update_settings(input_yaml, to_py, tier):
     :param to_py: Output python filename
     :type to_py: ```str```
 
+    :param namespace: Environment variable to change `tier`
+    :type namespace: ``str``
+
     :param tier: Tier, defaults to 'dev'
     :type tier: ```str```
     """
-    settings_gen_mod = module_from_yaml_at_tier(input_yaml, tier)
+    settings_gen_mod = module_from_yaml_at_tier(input_yaml, tier, namespace)
 
     with open(to_py, "wt") as f:
         f.write(to_code(settings_gen_mod))
 
 
-def module_from_yaml_at_tier(input_yaml, tier=environ.get("TIER", "dev")):
+def module_from_yaml_at_tier(
+    input_yaml, tier, namespace  # =environ.get("TIER", "dev"),
+):
     """
     Construct a new settings module (in memory AST)
 
@@ -331,11 +336,16 @@ def module_from_yaml_at_tier(input_yaml, tier=environ.get("TIER", "dev")):
     :type input_yaml: ```str```
 
     :param tier: Tier, defaults to env var TIER if set else 'dev'
-    :type tier: ```str```
+    :type tier: ```Optional[str]```
+
+    :param namespace: Environment variable to change `tier`
+    :type namespace: ``str``
 
     :return: Module of settings
     :rtype: ```Module```
     """
+    if tier is None:
+        tier = environ.get(tier, "dev")
     with open(input_yaml, "rt") as f:
         settings = yaml.safe_load(f)
     all_providers = []
@@ -354,7 +364,9 @@ def module_from_yaml_at_tier(input_yaml, tier=environ.get("TIER", "dev")):
                         ),
                         SingleLineComment(
                             "# (different tiers can be targeted with this"
-                            " script by setting the `TIER` env var; defaults to 'dev')\n"
+                            " script by setting the `{}` env var; defaults to 'dev')\n".format(
+                                namespace
+                            )
                         ),
                         ImportFrom(
                             module="typing",
@@ -473,4 +485,4 @@ def emit_sorted_yaml(f, settings):
 # reload(settings_gen)  # Ensure you call this after running `update_settings`
 
 
-__all__ = ["module_from_yaml_at_tier"]
+__all__ = ["module_from_yaml_at_tier", "to_code"]

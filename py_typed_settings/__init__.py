@@ -8,7 +8,7 @@ from os import path
 import yaml
 
 __author__ = "Samuel Marks"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __description__ = "Generate typed settings.py from settings.yaml in Python 2, 3"
 
 
