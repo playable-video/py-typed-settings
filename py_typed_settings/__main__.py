@@ -23,7 +23,7 @@ def rpartial(func, *args):
 
 with open(path.join(path.dirname(__file__), "__init__.py")) as f:
     __version__, __description__ = map(
-        lambda const: const.value if version_info > (3, 6) else const.s,
+        lambda const: const.value if hasattr(const, "value") else const.s,
         map(
             attrgetter("value"),
             map(
