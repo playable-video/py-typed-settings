@@ -8,6 +8,7 @@ from __future__ import print_function
 
 from ast import AST, Assign, ClassDef, Load, Name, Num, Store, Str, Tuple
 from collections import OrderedDict
+from copy import deepcopy
 from functools import partial
 from importlib import import_module
 from operator import itemgetter, methodcaller
@@ -273,21 +274,31 @@ def list_of_dict_to_classes(list_of_dict, name, all_providers, tier):
     :return: Generated `class`es as an iterable
     :rtype: ```Iterable[ClassDef]``
     """
+
     def get_properties_always_fallback(provider_, tier_):
         """
         `dev` sometimes contains more properties than the current tier… merge here
 
-        :param provider_:
+        :param provider_: dictionary with `tier` keys
         :type provider_: ```dict```
 
-        :param tier_: Tier
+        :param tier_: Tier, always has a `dev` option
         :type tier_: ```Optional[str]```
 
-        :return:
+        :return: dict at tier, potentially merged with the `dev` tier if it has keys not present at non-dev tier
+        :rtype: ```dict``
         """
-        if tier_ in ("dev", None):
-            return provider_[tier if tier in provider_ else "dev"]
-        return provider_[tier if tier in provider_ else "dev"] # TODO
+        if tier_ in ("dev", None) or tier not in provider_:
+            return provider_["dev"]
+
+        diff_hit = frozenset(provider_[tier].keys()) ^ frozenset(
+            provider_["dev"].keys()
+        )
+        if not diff_hit:
+            return provider_[tier]
+        d = deepcopy(provider_[tier])
+        d.update({k: provider_["dev"][k] for k in diff_hit})
+        return d
 
     return (
         generate_container(
