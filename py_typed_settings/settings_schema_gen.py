@@ -4,7 +4,6 @@ from __future__ import print_function
 
 from ast import Assign, ImportFrom, List, Load, Module, Name, Store, alias
 from itertools import chain
-from itertools import imap as map
 from os import environ, path
 from sys import version_info
 
